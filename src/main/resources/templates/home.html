@@ -1,0 +1,30 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div>
+    <a href="/play">Play round</a>
+<div/>
+<br/>
+<div th:if="${not #lists.isEmpty(stats)}">
+    <p th:text="'Round: ' + ${#lists.size(stats)}"></p>
+    <br/>
+    <table border="1">
+        <tr>
+            <th>Player 1</th>
+            <th>Player 2</th>
+            <th>Result</th>
+        </tr>
+        <tr th:each="stat : ${stats}">
+            <td th:text="${stat.player1}"></td>
+            <td th:text="${stat.player2}"></td>
+            <td th:text="${stat.result}"></td>
+        </tr>
+    </table>
+    <br/>
+    <a href="/reset">Reset game</a>
+</div>
+
+
+</body>
+</html>
