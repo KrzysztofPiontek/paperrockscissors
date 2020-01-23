@@ -9,7 +9,7 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import java.util.List;
 
 @Getter(AccessLevel.PACKAGE)
-class Statistics {
+class PlayerStatistics {
 
     private Cache<String, List<ImmutablePair<Figure, Figure>>> roundsOutcomes = Caffeine.newBuilder()
             .maximumSize(10_000)

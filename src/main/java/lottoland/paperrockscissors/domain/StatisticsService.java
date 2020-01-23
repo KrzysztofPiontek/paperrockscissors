@@ -10,19 +10,26 @@ import java.util.Optional;
 @Service
 class StatisticsService {
 
-    private final Statistics statistics = new Statistics();
+    private final PlayerStatistics playerStatistics = new PlayerStatistics();
+
+    private final GeneralStatistics generalStatistics = new GeneralStatistics();
 
     void storeRoundOutcome(String playerId, Figure player1, Figure player2) {
 
-        statistics.getRoundsOutcomes().get(playerId, (id) -> new ArrayList<>()).add(ImmutablePair.of(player1, player2));
+        playerStatistics.getRoundsOutcomes().get(playerId, (id) -> new ArrayList<>()).add(ImmutablePair.of(player1, player2));
+        generalStatistics.updateGeneralStats(player1.compareRank(player2));
     }
 
     List<ImmutablePair<Figure, Figure>> getStatsForPlayer(String playerId) {
-        return Optional.ofNullable(statistics.getRoundsOutcomes().getIfPresent(playerId)).orElse(new ArrayList<>());
+        return Optional.ofNullable(playerStatistics.getRoundsOutcomes().getIfPresent(playerId)).orElse(new ArrayList<>());
+    }
+
+    GeneralStatistics getGeneralStats() {
+        return generalStatistics;
     }
 
     void resetStatisticsForPlayer(String playerId) {
 
-        statistics.getRoundsOutcomes().invalidate(playerId);
+        playerStatistics.getRoundsOutcomes().invalidate(playerId);
     }
 }

@@ -11,8 +11,6 @@ import org.mockito.MockitoAnnotations;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.*;
-
 public class GameServiceTest {
 
     private static final String PLAYER_1_ID = "testId_1";
@@ -35,7 +33,7 @@ public class GameServiceTest {
         //Draw
         Mockito.when(statisticsService.getStatsForPlayer(PLAYER_1_ID)).
                 thenReturn(Collections.singletonList(ImmutablePair.of(Figure.ROCK, Figure.ROCK)));
-        List<GameService.GameStatistics> playerStatistics = testedService.getPlayerStatistics(PLAYER_1_ID);
+        List<GameService.SingleGameStats> playerStatistics = testedService.getPlayerStatistics(PLAYER_1_ID);
         Assert.assertEquals(Figure.ROCK, playerStatistics.get(0).getPlayer1());
         Assert.assertEquals(Figure.ROCK, playerStatistics.get(0).getPlayer2());
         Assert.assertEquals("Draw", playerStatistics.get(0).getResult());

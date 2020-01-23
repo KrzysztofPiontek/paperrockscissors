@@ -1,0 +1,15 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<p th:text="'Total rounds: ' + ${generalStats.totalRounds}"></p>
+<p th:text="'Player 1 wins: ' + ${generalStats.player1wins}"></p>
+<p th:text="'Player 2 wins: ' + ${generalStats.player2wins}"></p>
+<p th:text="'Draws: ' + ${generalStats.draws}"></p>
+<br/>
+<div>
+    <a href="/">Back to game</a>
+</div>
+
+</body>
+</html>

@@ -4,7 +4,8 @@
 
 <div>
     <a href="/play">Play round</a>
-<div/>
+    <a href="/stats">Show general statistics</a>
+</div>
 <br/>
 <div th:if="${not #lists.isEmpty(stats)}">
     <p th:text="'Round: ' + ${#lists.size(stats)}"></p>

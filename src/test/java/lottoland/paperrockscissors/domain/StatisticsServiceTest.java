@@ -5,7 +5,12 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class StatisticsServiceTest {
 
@@ -33,18 +38,36 @@ public class StatisticsServiceTest {
         Assert.assertEquals(Figure.ROCK, statsForPlayer.get(0).left);
         Assert.assertEquals(Figure.PAPER, statsForPlayer.get(0).right);
 
+        GeneralStatistics generalStats = testedService.getGeneralStats();
+        Assert.assertEquals(1, generalStats.getTotalRounds());
+        Assert.assertEquals(1, generalStats.getPlayer2wins());
+        Assert.assertEquals(0, generalStats.getPlayer1wins());
+        Assert.assertEquals(0, generalStats.getDraws());
+
         testedService.storeRoundOutcome(PLAYER_1_ID, Figure.SCISSORS, Figure.SCISSORS);
         statsForPlayer = testedService.getStatsForPlayer(PLAYER_1_ID);
         Assert.assertEquals(2, statsForPlayer.size());
         Assert.assertEquals(Figure.SCISSORS, statsForPlayer.get(1).left);
         Assert.assertEquals(Figure.SCISSORS, statsForPlayer.get(1).right);
 
-        testedService.storeRoundOutcome(PLAYER_2_ID, Figure.ROCK, Figure.ROCK);
+        generalStats = testedService.getGeneralStats();
+        Assert.assertEquals(2, generalStats.getTotalRounds());
+        Assert.assertEquals(0, generalStats.getPlayer1wins());
+        Assert.assertEquals(1, generalStats.getPlayer2wins());
+        Assert.assertEquals(1, generalStats.getDraws());
+
+        testedService.storeRoundOutcome(PLAYER_2_ID, Figure.PAPER, Figure.ROCK);
         statsForPlayer = testedService.getStatsForPlayer(PLAYER_2_ID);
         Assert.assertEquals(1, statsForPlayer.size());
 
         statsForPlayer = testedService.getStatsForPlayer(PLAYER_1_ID);
         Assert.assertEquals(2, statsForPlayer.size());
+
+        generalStats = testedService.getGeneralStats();
+        Assert.assertEquals(3, generalStats.getTotalRounds());
+        Assert.assertEquals(1, generalStats.getPlayer1wins());
+        Assert.assertEquals(1, generalStats.getPlayer2wins());
+        Assert.assertEquals(1, generalStats.getDraws());
     }
 
     @Test
@@ -107,5 +130,23 @@ public class StatisticsServiceTest {
         Assert.assertTrue(testedService.getStatsForPlayer(PLAYER_1_ID).isEmpty());
         Assert.assertTrue(testedService.getStatsForPlayer(PLAYER_2_ID).isEmpty());
         Assert.assertTrue(testedService.getStatsForPlayer(PLAYER_3_ID).isEmpty());
+    }
+
+    @Test
+    public void storeRoundOutcome_concurrent() throws InterruptedException {
+
+        ExecutorService executor = Executors.newFixedThreadPool(8);
+        List<Callable<String>> tasks = new ArrayList<>();
+        for (int i = 0; i < 500_000; i++) {
+            tasks.add(() -> {
+                testedService.storeRoundOutcome(PLAYER_1_ID, Figure.ROCK, Figure.ROCK);
+                return "executed";
+            });
+        }
+        executor.invokeAll(tasks);
+        executor.shutdown();
+        executor.awaitTermination(30, TimeUnit.SECONDS);
+        GeneralStatistics generalStats = testedService.getGeneralStats();
+        Assert.assertEquals(500_000, generalStats.getDraws());
     }
 }

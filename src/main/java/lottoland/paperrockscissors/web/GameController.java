@@ -14,7 +14,7 @@ import java.util.List;
 public class GameController {
 
     private static final String HOME_PATH = "home";
-
+    private static final String STATS_PATH = "stats";
     private static final String ROOT_REDIRECT = "redirect:/";
 
     @Autowired
@@ -23,9 +23,9 @@ public class GameController {
     @RequestMapping
     public String home(Model model, HttpServletRequest request) {
 
-        List<GameService.GameStatistics> gameStatistics =
+        List<GameService.SingleGameStats> singleGameStatistics =
                 gameService.getPlayerStatistics(request.getSession().getId());
-        model.addAttribute("stats", gameStatistics);
+        model.addAttribute("stats", singleGameStatistics);
         return HOME_PATH;
     }
 
@@ -41,5 +41,12 @@ public class GameController {
 
         gameService.resetPlayer(request.getSession().getId());
         return ROOT_REDIRECT;
+    }
+
+    @RequestMapping("/stats")
+    public String showStats(Model model) {
+
+        model.addAttribute("generalStats", gameService.getGeneralStatistics());
+        return STATS_PATH;
     }
 }
